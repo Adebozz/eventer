@@ -1,6 +1,6 @@
-import './globals.css'
-import Providers from './providers'
-import Navbar from '@/components/ui/Navbar'
+import './globals.css';
+import Providers from './providers';
+import Navbar from '../../components/ui/Navbar';
 
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
