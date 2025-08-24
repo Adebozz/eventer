@@ -13,6 +13,7 @@ import {
   Card,
   CardBody,
   Spinner,
+  ButtonGroup,
 } from "@chakra-ui/react";
 
 interface Event {
@@ -31,6 +32,12 @@ export default function EventsPage() {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [location, setLocation] = useState("");
+
+  // Track editing
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editDate, setEditDate] = useState("");
+  const [editLocation, setEditLocation] = useState("");
 
   // Fetch events
   useEffect(() => {
@@ -66,6 +73,51 @@ export default function EventsPage() {
       }
     } catch (err) {
       console.error("Error adding event:", err);
+    }
+  }
+
+  // Delete event
+  async function handleDelete(id: string) {
+    try {
+      const res = await fetch(`/api/events/${id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setEvents(events.filter((event) => event.id !== id));
+      }
+    } catch (err) {
+      console.error("Error deleting event:", err);
+    }
+  }
+
+  // Start editing
+  function startEdit(event: Event) {
+    setEditingId(event.id);
+    setEditTitle(event.title);
+    setEditDate(event.date.slice(0, 16)); // datetime-local requires "YYYY-MM-DDTHH:mm"
+    setEditLocation(event.location);
+  }
+
+  // Save edit
+  async function handleSave(id: string) {
+    try {
+      const res = await fetch(`/api/events/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: editTitle,
+          date: editDate,
+          location: editLocation,
+        }),
+      });
+
+      if (res.ok) {
+        const updated = await res.json();
+        setEvents(events.map((ev) => (ev.id === id ? updated : ev)));
+        setEditingId(null);
+      }
+    } catch (err) {
+      console.error("Error updating event:", err);
     }
   }
 
@@ -127,11 +179,61 @@ export default function EventsPage() {
           {events.map((event) => (
             <Card key={event.id} shadow="md" borderWidth="1px">
               <CardBody>
-                <Heading size="md">{event.title}</Heading>
-                <Text mt={2}>
-                  📅 {new Date(event.date).toLocaleString()}
-                </Text>
-                <Text>📍 {event.location}</Text>
+                {editingId === event.id ? (
+                  <VStack spacing={3} align="stretch">
+                    <Input
+                      value={editTitle}
+                      onChange={(e) => setEditTitle(e.target.value)}
+                    />
+                    <Input
+                      type="datetime-local"
+                      value={editDate}
+                      onChange={(e) => setEditDate(e.target.value)}
+                    />
+                    <Input
+                      value={editLocation}
+                      onChange={(e) => setEditLocation(e.target.value)}
+                    />
+                    <ButtonGroup>
+                      <Button
+                        colorScheme="green"
+                        onClick={() => handleSave(event.id)}
+                      >
+                        Save
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => setEditingId(null)}
+                      >
+                        Cancel
+                      </Button>
+                    </ButtonGroup>
+                  </VStack>
+                ) : (
+                  <>
+                    <Heading size="md">{event.title}</Heading>
+                    <Text mt={2}>
+                      📅 {new Date(event.date).toLocaleString()}
+                    </Text>
+                    <Text>📍 {event.location}</Text>
+                    <ButtonGroup mt={3}>
+                      <Button
+                        size="sm"
+                        colorScheme="yellow"
+                        onClick={() => startEdit(event)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        size="sm"
+                        colorScheme="red"
+                        onClick={() => handleDelete(event.id)}
+                      >
+                        Delete
+                      </Button>
+                    </ButtonGroup>
+                  </>
+                )}
               </CardBody>
             </Card>
           ))}
