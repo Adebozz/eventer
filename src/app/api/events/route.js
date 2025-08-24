@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 
-const prisma = new PrismaClient();
-
-// GET all events
+// ✅ Get all events
 export async function GET() {
   try {
     const events = await prisma.event.findMany({
@@ -13,12 +11,10 @@ export async function GET() {
   } catch (error) {
     console.error("Error fetching events:", error);
     return NextResponse.json({ error: "Failed to fetch events" }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
-// POST a new event
+// ✅ Create new event
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -43,7 +39,5 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Error creating event:", error);
     return NextResponse.json({ error: "Failed to create event" }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
   }
 }
