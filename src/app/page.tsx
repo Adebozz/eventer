@@ -1,5 +1,5 @@
 import React from "react";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/libs/prisma";
 
 export default async function HomePage() {
   // ✅ Fetch events directly from the database (server component)
