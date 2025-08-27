@@ -1,10 +1,29 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
 
-export default function NewEventPage() {
+export default function EditEventPage() {
   const router = useRouter();
+  const params = useParams();
+  const eventId = params?.id as string;
+
   const [form, setForm] = useState({ title: "", date: "", location: "" });
+  const [loading, setLoading] = useState(true);
+
+  // ✅ Fetch existing event
+  useEffect(() => {
+    async function fetchEvent() {
+      const res = await fetch(`/api/events/${eventId}`);
+      const data = await res.json();
+      setForm({
+        title: data.title,
+        date: new Date(data.date).toISOString().split("T")[0],
+        location: data.location,
+      });
+      setLoading(false);
+    }
+    fetchEvent();
+  }, [eventId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -12,17 +31,19 @@ export default function NewEventPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await fetch("/api/events", {
-      method: "POST",
+    await fetch(`/api/events/${eventId}`, {
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
     router.push("/");
   };
 
+  if (loading) return <p className="p-6">Loading...</p>;
+
   return (
     <main className="max-w-lg mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Add New Event</h1>
+      <h1 className="text-2xl font-bold mb-4">Edit Event</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           name="title"
@@ -50,9 +71,9 @@ export default function NewEventPage() {
         />
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          className="w-full bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600 transition"
         >
-          Create Event
+          Update Event
         </button>
       </form>
     </main>
