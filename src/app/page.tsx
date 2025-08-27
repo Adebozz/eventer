@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
@@ -63,7 +64,13 @@ export default function HomePage() {
               className="p-4 border rounded-lg shadow-sm bg-white flex justify-between items-center"
             >
               <div>
-                <h2 className="text-xl font-semibold">{event.title}</h2>
+                {/* ✅ Title now links to event detail page */}
+                <Link
+                  href={`/events/${event.id}`}
+                  className="text-xl font-semibold text-blue-600 hover:underline"
+                >
+                  {event.title}
+                </Link>
                 <p className="text-gray-600">
                   📍 {event.location} —{" "}
                   {new Date(event.date).toLocaleDateString()}
