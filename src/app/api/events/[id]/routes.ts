@@ -1,17 +1,6 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import { z } from "zod";
-
-const prisma = new PrismaClient();
-
-// ✅ Reuse Zod schema
-const eventSchema = z.object({
-  title: z.string().min(3, "Title must be at least 3 characters"),
-  date: z.string().refine((val) => !isNaN(Date.parse(val)), {
-    message: "Invalid date",
-  }),
-  location: z.string().min(2, "Location is required"),
-});
+import prisma from "@/src/libs/prisma"; // ✅ Prisma singleton
+import { eventSchema } from "@/lib/validation"; // ✅ Zod schema
 
 // ✅ GET /api/events/[id]
 export async function GET(

@@ -1,14 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Loader2, Pencil, Trash2 } from "lucide-react";
 
-interface Event {
+type Event = {
   id: string;
   title: string;
   date: string;
   location: string;
-}
+};
 
 export default function HomePage() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -16,17 +19,17 @@ export default function HomePage() {
 
   // ✅ Fetch events
   useEffect(() => {
-    async function fetchEvents() {
+    const fetchEvents = async () => {
       try {
         const res = await fetch("/api/events");
         const data = await res.json();
         setEvents(data);
-      } catch (error) {
-        console.error("Error fetching events:", error);
+      } catch (err) {
+        console.error(err);
       } finally {
         setLoading(false);
       }
-    }
+    };
     fetchEvents();
   }, []);
 
@@ -36,63 +39,59 @@ export default function HomePage() {
     try {
       await fetch(`/api/events/${id}`, { method: "DELETE" });
       setEvents(events.filter((event) => event.id !== id));
-    } catch (error) {
-      console.error("Error deleting event:", error);
+    } catch (err) {
+      console.error(err);
     }
   };
 
   return (
-    <main className="max-w-3xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Events</h1>
-
-      <Link
-        href="/events/new"
-        className="mb-6 inline-block px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
-      >
-        ➕ Add Event
-      </Link>
+    <main className="max-w-4xl mx-auto py-10 px-4">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-blue-600">📅 Upcoming Events</h1>
+        <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+          <Link href="/events/new">+ Create Event</Link>
+        </Button>
+      </div>
 
       {loading ? (
-        <p className="text-gray-500">Loading events...</p>
+        <div className="flex justify-center items-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        </div>
       ) : events.length === 0 ? (
-        <p className="text-gray-500">No events found.</p>
+        <p className="text-gray-500 text-center">No events found. Create one!</p>
       ) : (
-        <ul className="space-y-4">
+        <div className="grid gap-6 md:grid-cols-2">
           {events.map((event) => (
-            <li
+            <Card
               key={event.id}
-              className="p-4 border rounded-lg shadow-sm bg-white flex justify-between items-center"
+              className="shadow-md border border-gray-200 dark:border-gray-800"
             >
-              <div>
-                {/* ✅ Title now links to event detail page */}
-                <Link
-                  href={`/events/${event.id}`}
-                  className="text-xl font-semibold text-blue-600 hover:underline"
-                >
-                  {event.title}
-                </Link>
+              <CardContent className="p-6 space-y-3">
+                <h2 className="text-xl font-semibold">{event.title}</h2>
                 <p className="text-gray-600">
-                  📍 {event.location} —{" "}
-                  {new Date(event.date).toLocaleDateString()}
+                  📍 {event.location} <br />
+                  📆 {new Date(event.date).toLocaleDateString()}
                 </p>
-              </div>
-              <div className="flex gap-2">
-                <Link
-                  href={`/events/${event.id}/edit`}
-                  className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
-                >
-                  Edit
-                </Link>
-                <button
-                  onClick={() => handleDelete(event.id)}
-                  className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
-                >
-                  Delete
-                </button>
-              </div>
-            </li>
+
+                <div className="flex justify-end gap-2">
+                  <Button asChild size="sm" variant="outline">
+                    <Link href={`/events/${event.id}/edit`}>
+                      <Pencil className="h-4 w-4 mr-1" /> Edit
+                    </Link>
+                  </Button>
+
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => handleDelete(event.id)}
+                  >
+                    <Trash2 className="h-4 w-4 mr-1" /> Delete
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           ))}
-        </ul>
+        </div>
       )}
     </main>
   );
