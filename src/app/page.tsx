@@ -2,52 +2,43 @@ import React from "react";
 import { prisma } from "@/libs/prisma";
 
 export default async function HomePage() {
-  // ✅ Fetch events directly from the database (server component)
+  // ✅ Fetch events directly from DB (server component)
   const events = await prisma.event.findMany({
     orderBy: { createdAt: "desc" },
   });
 
   return (
-    <main className="max-w-5xl mx-auto p-8">
-      {/* Header */}
-      <h1 className="text-4xl font-extrabold text-center mb-10 bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
+    <main className="max-w-6xl mx-auto p-6">
+      <h1 className="text-4xl font-bold mb-10 text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
         Upcoming Events
       </h1>
 
       {events.length === 0 ? (
-        <p className="text-center text-gray-500 text-lg">
-          No events available. 🎉
+        <p className="text-center text-gray-500 dark:text-gray-400">
+          No events yet. Be the first to create one!
         </p>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {events.map((event) => (
             <div
               key={event.id}
-              className="group relative p-6 rounded-2xl bg-white shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-gray-100"
+              className="group relative p-6 rounded-2xl border shadow-sm bg-white dark:bg-neutral-900 transition hover:shadow-xl hover:-translate-y-1"
             >
-              {/* Accent bar */}
-              <span className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-t-2xl"></span>
-
-              <h2 className="text-2xl font-semibold mb-2 text-gray-800 group-hover:text-purple-600 transition-colors">
+              <h2 className="text-xl font-semibold mb-2 group-hover:text-blue-600 dark:group-hover:text-purple-400 transition">
                 {event.title}
               </h2>
-
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 dark:text-gray-400 mb-3">
                 📍 {event.location}
               </p>
-
-              <p className="text-sm text-gray-500">
-                {new Date(event.date).toLocaleDateString("en-US", {
+              <p className="text-sm text-gray-500 dark:text-gray-500">
+                {new Date(event.date).toLocaleDateString(undefined, {
                   weekday: "long",
                   year: "numeric",
                   month: "long",
                   day: "numeric",
                 })}
               </p>
-
-              <button className="mt-4 w-full py-2 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium hover:opacity-90 transition">
-                View Details
-              </button>
+              <span className="absolute inset-0 rounded-2xl ring-2 ring-transparent group-hover:ring-blue-500 dark:group-hover:ring-purple-500 transition pointer-events-none" />
             </div>
           ))}
         </div>
