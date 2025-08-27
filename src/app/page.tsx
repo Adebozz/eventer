@@ -1,8 +1,8 @@
 import React from "react";
+import Link from "next/link";
 import { prisma } from "@/libs/prisma";
 
 export default async function HomePage() {
-  // ✅ Fetch events directly from DB (server component)
   const events = await prisma.event.findMany({
     orderBy: { createdAt: "desc" },
   });
@@ -20,8 +20,9 @@ export default async function HomePage() {
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {events.map((event) => (
-            <div
+            <Link
               key={event.id}
+              href={`/events/${event.id}`}
               className="group relative p-6 rounded-2xl border shadow-sm bg-white dark:bg-neutral-900 transition hover:shadow-xl hover:-translate-y-1"
             >
               <h2 className="text-xl font-semibold mb-2 group-hover:text-blue-600 dark:group-hover:text-purple-400 transition">
@@ -39,7 +40,7 @@ export default async function HomePage() {
                 })}
               </p>
               <span className="absolute inset-0 rounded-2xl ring-2 ring-transparent group-hover:ring-blue-500 dark:group-hover:ring-purple-500 transition pointer-events-none" />
-            </div>
+            </Link>
           ))}
         </div>
       )}

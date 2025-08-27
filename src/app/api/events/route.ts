@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/libs/prisma";
 
 // ✅ Get all events
 export async function GET() {
@@ -10,15 +10,17 @@ export async function GET() {
     return NextResponse.json(events);
   } catch (error) {
     console.error("Error fetching events:", error);
-    return NextResponse.json({ error: "Failed to fetch events" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch events" },
+      { status: 500 }
+    );
   }
 }
 
 // ✅ Create new event
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { title, date, location } = body;
+    const { title, date, location } = await req.json();
 
     if (!title || !date || !location) {
       return NextResponse.json(
@@ -27,10 +29,18 @@ export async function POST(req: Request) {
       );
     }
 
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate.getTime())) {
+      return NextResponse.json(
+        { error: "Invalid date format" },
+        { status: 400 }
+      );
+    }
+
     const newEvent = await prisma.event.create({
       data: {
         title,
-        date: new Date(date),
+        date: parsedDate,
         location,
       },
     });
@@ -38,6 +48,9 @@ export async function POST(req: Request) {
     return NextResponse.json(newEvent, { status: 201 });
   } catch (error) {
     console.error("Error creating event:", error);
-    return NextResponse.json({ error: "Failed to create event" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create event" },
+      { status: 500 }
+    );
   }
 }
