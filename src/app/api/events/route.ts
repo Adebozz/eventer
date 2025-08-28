@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import prisma from "@/src/libs/prisma"; // ✅ ensure correct prisma import
-import { eventSchema } from "@/lib/validation"; // ✅ shared schema
+import prisma from "@/src/libs/prisma";
+import { eventSchema } from "@/lib/validation";
+import { generateSlug } from "@/lib/utils";
 
-// ✅ GET /api/events → fetch all
+// ✅ GET /api/events
 export async function GET() {
   try {
     const events = await prisma.event.findMany({
@@ -19,12 +20,12 @@ export async function GET() {
   }
 }
 
-// ✅ POST /api/events → create new
+// ✅ POST /api/events
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-
     const parsed = eventSchema.safeParse(body);
+
     if (!parsed.success) {
       return NextResponse.json(
         { errors: parsed.error.format() },
@@ -32,10 +33,13 @@ export async function POST(req: Request) {
       );
     }
 
+    const slug = parsed.data.slug || generateSlug(parsed.data.title);
+
     const newEvent = await prisma.event.create({
       data: {
         ...parsed.data,
-        date: new Date(parsed.data.date), // 🔧 ensure Date object
+        slug,
+        date: new Date(parsed.data.date),
       },
     });
 

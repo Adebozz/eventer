@@ -6,6 +6,5 @@ export const eventSchema = z.object({
     message: "Invalid date",
   }),
   location: z.string().min(2, "Location is required"),
+  slug: z.string().optional(), // 🔧 auto-generated if missing
 });
-
-export type EventInput = z.infer<typeof eventSchema>;
