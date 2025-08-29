@@ -8,10 +8,13 @@ generator client {
 }
 
 model Event {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(cuid())
   title     String
   date      DateTime
   location  String
+  slug      String   @unique
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
+
 
