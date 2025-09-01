@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import prisma from "@/src/libs/prisma";
-import { eventSchema } from "@/lib/validation";
+import prisma from "@/libs/prisma";
+import { eventSchema } from "";
 import { generateSlug } from "@/lib/utils";
 
 // ✅ GET /api/events
