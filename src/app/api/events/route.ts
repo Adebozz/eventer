@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import prisma from "@/libs/prisma";
+import { prisma }from "@/libs/prisma";
 import { eventSchema } from "../../../../lib/validation";
 import { generateSlug } from "../../../../lib/utils";
 

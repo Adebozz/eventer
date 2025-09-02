@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import prisma from "@/src/libs/prisma"; // ✅ Prisma singleton
-import { eventSchema } from "@/lib/validation"; // ✅ Zod schema
+import { prisma } from "@/libs/prisma"; // ✅ Prisma singleton
+import { eventSchema } from "../../../../../lib/validation"; // ✅ Zod schema
 
 // ✅ GET /api/events/[id]
 export async function GET(
