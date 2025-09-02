@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/libs/prisma";
-import { eventSchema } from "";
-import { generateSlug } from "@/lib/utils";
+import { eventSchema } from "../../../../lib/validation";
+import { generateSlug } from "../../../../lib/utils";
 
 // ✅ GET /api/events
 export async function GET() {

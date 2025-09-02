@@ -5,7 +5,7 @@ import ThemeToggle from './ThemeToggle'
 export default function Navbar() {
   return (
     <nav className="sticky top-0 z-40 px-4 h-14 flex items-center justify-between border-b bg-white/70 dark:bg-neutral-900/70 backdrop-blur">
-      <Link href="/" className="font-semibold text-lg">eventer</Link>
+      <Link href="/" className="font-semibold text-lg">Eventer</Link>
       <div className="flex items-center gap-4">
         <Link 
           href="/events/new"
