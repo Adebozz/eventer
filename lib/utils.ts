@@ -1,3 +1,12 @@
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+// 🔹 Shadcn helper for merging Tailwind class names
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
+// 🔹 Your slug generator
 export function generateSlug(title: string): string {
   return title
     .toLowerCase()
